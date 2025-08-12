@@ -6,6 +6,7 @@ const logger = require("morgan");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const compression = require("compression");
 const zlib = require("zlib");
+require('dotenv').config();
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
@@ -39,7 +40,7 @@ app.use(cookieParser());
 app.use(
   "/api",
   createProxyMiddleware({
-    target: "https://test-ai.smartroi.cn/api", // 目标服务器
+    target: process.env.TARGET, // 目标服务器
     changeOrigin: true, // 更改请求来源，以适应目标服务器
   })
 );
