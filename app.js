@@ -3,11 +3,21 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var { createProxyMiddleware } = require('http-proxy-middleware'); // 导入代理中间件
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+
+// 配置代理中间件
+const apiProxy = createProxyMiddleware({
+  target: 'https://test-ai.smartroi.cn', // 目标服务器
+  changeOrigin: true, // 更改请求来源，以适应目标服务器
+  pathRewrite: {
+    '^/api': '/api' // 保持路径不变
+  }
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -18,6 +28,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(apiProxy);
 
 app.use('/users', usersRouter);
 app.use('/home', indexRouter);
